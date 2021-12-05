@@ -1,6 +1,6 @@
 const initialState = {
     settings: {
-        API_URL: 'http://localhost:8283',
+        API_URL: 'https://jp26198926-bss-backend.herokuapp.com',
         appName: 'Basic Support System'
     },
     showLogin: false,
