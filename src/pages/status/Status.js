@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { Table, Button, Row } from 'react-bootstrap';
 import {  FaPen, FaTimes } from 'react-icons/fa';
