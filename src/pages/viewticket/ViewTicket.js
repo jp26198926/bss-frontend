@@ -18,8 +18,8 @@ const ViewTicket = (props) => {
   const selectedData = useSelector((state) => state.selectedData);
   const [form, setForm] = useState({
     ticketId: id,
-    name: currentUser?.name,
-    email: currentUser?.email,
+    name: "",
+    email: "",
     message: "",
   });
 
@@ -36,11 +36,21 @@ const ViewTicket = (props) => {
   useEffect(() => {
     //get main data for this page
     axios.get(API_URL + "/Ticket/" + id).then((result) => {
-      // setForm({
-      //   ...form,
-      //   name: result.data.result?.name,
-      //   email: result.data.result?.email,
-      // });
+           
+      if (Object.keys(currentUser).length === 0) { //if no loggedInuser
+        setForm({
+          ...form,
+          name: result.data.result?.name,
+          email: result.data.result?.email
+        });
+
+      }else{
+        setForm({
+          ...form,
+          name: currentUser?.name,
+          email: currentUser?.email
+        });       
+      }      
 
       dispatch({ type: "SET_DATA_SELECTED", payload: result.data.result });
     });
@@ -68,11 +78,11 @@ const ViewTicket = (props) => {
   //save
   const triggerSubmitReply = async (e) => {
     e.preventDefault();
-
+    
     //check if required field is not empty
     if (ticketId && name && email && message) {
       let response = {};
-      console.log(form);
+      
       await axios.post(API_URL + "/TicketReply/", form).then((result) => {
         if (!result.data.error) {
           response = { success: "Successfully added!" };

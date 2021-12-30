@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
+import { useNavigate } from 'react-router';
 import axios from 'axios';
 import { Table, Button, Row } from 'react-bootstrap';
 import {  FaPen, FaTimes } from 'react-icons/fa';
@@ -17,6 +18,8 @@ const Role = props => {
     const [showMessage, setShowMessage] = useState({ show: false, variant: "danger", message: "" });
     
     const dispatch = useDispatch();
+    const navigate = useNavigate();
+    const currentUser = useSelector(state => state.currentUser);
     const API_URL = useSelector(state => state.settings.API_URL);
     const datas = useSelector(state => state.datas);
     const showConfirm = useSelector(state => state.showConfirm);
@@ -31,10 +34,17 @@ const Role = props => {
     }
 
     //copy db data to redux upon load
-    useEffect(() => {        
-        axios.get(API_URL + '/Role').then(result => {
-            dispatch({ type: 'SET_DATA', payload: result.data.result });
-        });
+    useEffect(() => {    
+        //check if there is a login user
+        if (Object.keys(currentUser).length === 0){ //if none, goto landing page and show login screen
+            navigate('/');
+            dispatch({ type: 'SHOW_LOGIN', payload: true });
+        }else{
+            axios.get(API_URL + '/Role').then(result => {
+                dispatch({ type: 'SET_DATA', payload: result.data.result });
+            });
+        }
+       
     }, []);
 
     const triggerSearch = () => {        

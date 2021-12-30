@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 import axios from "axios";
 import { Table, Button, Row } from "react-bootstrap";
 import { FaPen, FaTimes, FaKey } from "react-icons/fa";
@@ -30,6 +31,8 @@ const User = (props) => {
   });
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const currentUser = useSelector((state)=>state.currentUser);
   const API_URL = useSelector((state) => state.settings.API_URL);
   const datas = useSelector((state) => state.datas);
   const showConfirm = useSelector((state) => state.showConfirm);
@@ -53,19 +56,26 @@ const User = (props) => {
 
   //copy db data to redux upon load
   useEffect(() => {
-    //get main data for this page
-    axios.get(API_URL + "/User").then((result) => {
-      dispatch({ type: "SET_DATA", payload: result.data.result });
-    });
+    //check if there is a login user
+    if (Object.keys(currentUser).length === 0){ //if none, goto landing page and show login screen
+      navigate('/');
+      dispatch({ type: 'SHOW_LOGIN', payload: true });
+    }else{
+      //get main data for this page
+      axios.get(API_URL + "/User").then((result) => {
+        dispatch({ type: "SET_DATA", payload: result.data.result });
+      });
 
-    //get other data
-    axios.get(API_URL + "/Role").then((result) => {
-      dispatch({ type: "SET_DATA_ROLE", payload: result.data.result });
-    });
+      //get other data
+      axios.get(API_URL + "/Role").then((result) => {
+        dispatch({ type: "SET_DATA_ROLE", payload: result.data.result });
+      });
 
-    axios.get(API_URL + "/Status").then((result) => {
-      dispatch({ type: "SET_DATA_STATUS", payload: result.data.result });
-    });
+      axios.get(API_URL + "/Status").then((result) => {
+        dispatch({ type: "SET_DATA_STATUS", payload: result.data.result });
+      });
+    }
+    
   }, []);
 
   const triggerSearch = () => {

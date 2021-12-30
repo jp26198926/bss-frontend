@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { useSelector, useDispatch } from "react-redux";
+import { useNavigate } from "react-router";
 import axios from "axios";
 import { Table, Button, Row } from "react-bootstrap";
 import { FaPen, FaTimes } from "react-icons/fa";
@@ -24,7 +25,9 @@ const Setting = (props) => {
   });
 
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const settings = useSelector((state) => state.settings);
+  const currentUser = useSelector((state) => state.currentUser);
   //const settings.API_URL = useSelector(state => state.settings.settings.API_URL);
   const datas = useSelector((state) => state.datas);
   const showConfirm = useSelector((state) => state.showConfirm);
@@ -65,15 +68,21 @@ const Setting = (props) => {
 
   //copy db data to redux upon load
   useEffect(() => {
-    //get main data for this page
-    axios.get(settings.API_URL + "/Setting").then((response) => {
-      //save data to reducer
-      dispatch({
-        type: "SET_SETTINGS",
-        payload: setSettings(response.data.result),
+    if (Object.keys(currentUser).length === 0){ //if none, goto landing page and show login screen
+      navigate('/');
+      dispatch({ type: 'SHOW_LOGIN', payload: true });
+    }else{
+      //get main data for this page
+      axios.get(settings.API_URL + "/Setting").then((response) => {
+        //save data to reducer
+        dispatch({
+          type: "SET_SETTINGS",
+          payload: setSettings(response.data.result),
+        });
+        dispatch({ type: "SET_DATA", payload: response.data.result });
       });
-      dispatch({ type: "SET_DATA", payload: response.data.result });
-    });
+    }
+    
   }, []);
 
   const triggerSearch = () => {

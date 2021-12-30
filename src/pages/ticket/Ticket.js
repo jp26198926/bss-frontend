@@ -54,16 +54,24 @@ const Ticket = (props) => {
 
   //copy db data to redux upon load
   useEffect(() => {
-    //get main data for this page
-    axios.get(API_URL + "/Ticket/openTicket").then((result) => {
-      dispatch({ type: "SET_DATA", payload: result.data.result });
-    });
+    //check if there is a login user
+    if (Object.keys(currentUser).length === 0){ //if none, goto landing page and show login screen
+      navigate('/');
+      dispatch({ type: 'SHOW_LOGIN', payload: true });
+    }else{
+      //get main data for this page
+      axios.get(API_URL + "/Ticket/openTicket").then((result) => {
+        dispatch({ type: "SET_DATA", payload: result.data.result });
+      });
 
-    setForm({
-      ...form,
-      name: currentUser?.name,
-      email: currentUser?.email,
-    });
+      setForm({
+        ...form,
+        name: currentUser?.name,
+        email: currentUser?.email,
+      });
+    }
+
+    
   }, []);
 
   const getAllOpenTicket = () => {
